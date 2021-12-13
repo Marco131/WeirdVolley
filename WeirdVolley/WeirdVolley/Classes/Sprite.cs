@@ -33,7 +33,7 @@ namespace WeirdVolley
         /// <param name="spriteBatch"></param>
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(this.texture, this.rectangle, null, Color.White, this.rotation, Vector2.Zero, SpriteEffects.None, 0f);
+            spriteBatch.Draw(this.texture, this.rectangle, null, Color.White, this.rotation, new Vector2(0.5f, 0.5f), SpriteEffects.None, 0f);
         }
 
     }

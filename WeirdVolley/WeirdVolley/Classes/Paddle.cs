@@ -10,27 +10,52 @@ namespace WeirdVolley
 {
     class Paddle
     {
-        public Sprite _sprite;
+        // Attributs
+        public Sprite sprite;
         private Input _input;
-        private int moveSpeed = 1;
-        private int rotateSpeed = 1;
+        private int moveSpeed = 7;
+        private float rotateSpeed = 0.08f;
+
+        private List<Vector2> vertices = new List<Vector2>();
+
 
         // Ctor
         public Paddle(Sprite sprite, Input controls)
         {
-            this._sprite = sprite;
+            this.sprite = sprite;
             this._input = controls;
         }
 
         // Methods
         /// <summary>
-        /// Updates the paddle
+        /// Updates the paddle (Main)
         /// </summary>
         /// <param name="gametime"></param>
         public void Update(GameTime gametime)
         {
             Controls();
+
+            updateVertices();
         }
+
+        /// <summary>
+        /// Draws the paddle with a sprite batch (Main)
+        /// </summary>
+        /// <param name="spriteBatch"></param>
+        /// <param name="circle"></param>
+        public void Draw(SpriteBatch spriteBatch, Texture2D circle)
+        {
+            sprite.Draw(spriteBatch);
+
+            foreach (Vector2 vertice in vertices)
+            {
+                spriteBatch.Draw(circle, vertice, null, Color.Red, 0f, new Vector2(circle.Width/2, circle.Height/2), 1f,SpriteEffects.None, 0f);
+            }
+
+            spriteBatch.Draw(circle, sprite.rectangle.Location.ToVector2(), null, Color.Red, 0f, new Vector2(circle.Width/2, circle.Height/2), 1f,SpriteEffects.None, 0f);
+        }
+
+
 
         /// <summary>
         /// Controls the input, the mouvement and the rotation
@@ -40,23 +65,64 @@ namespace WeirdVolley
 
             if (kbdState.IsKeyDown(this._input.moveLeft))
             {
-                _sprite.rectangle.X -= moveSpeed;
+                sprite.rectangle.X -= moveSpeed;
             }
 
             if (kbdState.IsKeyDown(this._input.moveRight))
             {
-                _sprite.rectangle.X += moveSpeed;
+                sprite.rectangle.X += moveSpeed;
             }
 
             if (kbdState.IsKeyDown(this._input.rotateLeft))
             {
-                _sprite.rotation -= rotateSpeed;
+                sprite.rotation -= rotateSpeed;
             }
 
             if (kbdState.IsKeyDown(this._input.rotateRight))
             {
-                _sprite.rotation += rotateSpeed;
+                sprite.rotation += rotateSpeed;
             }
         }
+
+        /// <summary>
+        /// Finds a point in a circle 
+        /// </summary>
+        /// <param name="center">initial point</param>
+        /// <param name="angle">angle of rotation</param>
+        /// <param name="offset">center</param>
+        /// <returns></returns>
+        private Vector2 findPointInCircle(Vector2 center, float angle, Vector2 offset)
+        {
+            return new Vector2(
+                (center.X - offset.X) * (float)Math.Cos(angle) - (center.Y- offset.Y) * (float)Math.Sin(angle) + offset.X,
+                (center.X - offset.X) * (float)Math.Sin(angle) + (center.Y - offset.Y) * (float)Math.Cos(angle) + offset.Y
+            );
+        }
+
+        /// <summary>
+        /// Update the vertices position
+        /// </summary>
+        private void updateVertices()
+        {
+            Vector2 textureSize = sprite.rectangle.Size.ToVector2() / 2;
+
+            vertices.Clear();
+            vertices.Add(findPointInCircle(
+                sprite.rectangle.Center.ToVector2() - sprite.rectangle.Size.ToVector2()
+                , sprite.rotation, sprite.rectangle.Location.ToVector2()));
+
+            vertices.Add(findPointInCircle(
+                new Vector2(sprite.rectangle.Center.X, sprite.rectangle.Center.Y - sprite.rectangle.Size.Y)
+                , sprite.rotation, sprite.rectangle.Location.ToVector2()));
+
+            vertices.Add(findPointInCircle(
+                sprite.rectangle.Center.ToVector2()
+                , sprite.rotation, sprite.rectangle.Location.ToVector2()));
+
+            vertices.Add(findPointInCircle(
+                new Vector2(sprite.rectangle.Center.X - sprite.rectangle.Size.X, sprite.rectangle.Center.Y)
+                , sprite.rotation, sprite.rectangle.Location.ToVector2()));
+        }
+
     }
 }
