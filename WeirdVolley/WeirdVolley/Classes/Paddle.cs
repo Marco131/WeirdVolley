@@ -31,11 +31,14 @@ namespace WeirdVolley
         /// Updates the paddle (Main)
         /// </summary>
         /// <param name="gametime"></param>
-        public void Update(GameTime gametime)
+        public void Update(GameTime gametime, Sprite Net, int windowWidth)
         {
             Controls();
 
             updateVertices();
+
+            worldCollisions(Net, windowWidth);
+
         }
 
         /// <summary>
@@ -47,12 +50,12 @@ namespace WeirdVolley
         {
             sprite.Draw(spriteBatch);
 
-            foreach (Vector2 vertice in vertices)
+            /*foreach (Vector2 vertice in vertices)
             {
                 spriteBatch.Draw(circle, vertice, null, Color.Red, 0f, new Vector2(circle.Width/2, circle.Height/2), 1f,SpriteEffects.None, 0f);
             }
 
-            spriteBatch.Draw(circle, sprite.rectangle.Location.ToVector2(), null, Color.Red, 0f, new Vector2(circle.Width/2, circle.Height/2), 1f,SpriteEffects.None, 0f);
+            spriteBatch.Draw(circle, sprite.rectangle.Location.ToVector2(), null, Color.Red, 0f, new Vector2(circle.Width/2, circle.Height/2), 1f,SpriteEffects.None, 0f);*/
         }
 
 
@@ -124,5 +127,38 @@ namespace WeirdVolley
                 , sprite.rotation, sprite.rectangle.Location.ToVector2()));
         }
 
+        /// <summary>
+        /// Collide with world objetcs (window borders, net)
+        /// </summary>
+        private void worldCollisions(Sprite net, int windowWidth)
+        {
+            // find the closest vertices to the rigth and to the left
+            Vector2 closestToTheLeft = vertices[0];
+            Vector2 closestToTheRigth = vertices[0];
+
+            foreach (Vector2 vertice in vertices)
+            {
+                if (vertice.X < closestToTheLeft.X)
+                    closestToTheLeft = vertice;
+
+                if (vertice.X > closestToTheRigth.X)
+                    closestToTheRigth = vertice;
+            }
+
+            // window border
+            if (closestToTheLeft.X < 0)
+            {
+                float offset = -closestToTheLeft.X;
+                sprite.rectangle.X += (int)offset;
+            }
+
+            if (closestToTheRigth.X > windowWidth)
+            {
+                float offset = closestToTheRigth.X - windowWidth;
+                sprite.rectangle.X -= (int)offset;
+            }
+
+            updateVertices();
+        }
     }
 }
