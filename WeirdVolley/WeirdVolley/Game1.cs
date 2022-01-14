@@ -15,7 +15,8 @@ namespace WeirdVolley
 
         // Game Objects
         private Sprite _net;
-        private Paddle _paddle1;
+        private Paddle _paddleLeft;
+        private Paddle _paddleRight;
         private Ball _ball;
 
         public int windowWidth
@@ -65,17 +66,32 @@ namespace WeirdVolley
                     )
                 );
 
-            this._paddle1 = new Paddle(
+            this._paddleLeft = new Paddle(
                 new Sprite(
                     defaultTexture,
-                    new Rectangle(windowWidth, windowHeight - 50, 125, 10)),
+                    new Rectangle(0, windowHeight - 50, 125, 10)),
                 new Input
                 {
                     moveLeft = Keys.A,
                     moveRight = Keys.D,
                     rotateLeft = Keys.W,
                     rotateRight = Keys.S
-                }
+                },
+                true
+            );
+
+            this._paddleRight = new Paddle(
+                new Sprite(
+                    defaultTexture,
+                    new Rectangle(windowWidth, windowHeight - 50, 125, 10)),
+                new Input
+                {
+                    moveLeft = Keys.Left,
+                    moveRight = Keys.Right,
+                    rotateLeft = Keys.Up,
+                    rotateRight = Keys.Down
+                },
+                false
             );
 
             this._ball = new Ball(
@@ -98,7 +114,9 @@ namespace WeirdVolley
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            this._paddle1.Update(gameTime, _net, windowWidth);
+            this._paddleLeft.Update(gameTime, _net, windowWidth);
+            this._paddleRight.Update(gameTime, _net, windowWidth);
+
             this._ball.Update(gameTime);
 
             base.Update(gameTime);
@@ -112,7 +130,8 @@ namespace WeirdVolley
             _spriteBatch.Begin();
 
             this._net.Draw(_spriteBatch);
-            this._paddle1.Draw(_spriteBatch, pointTexture);
+            this._paddleLeft.Draw(_spriteBatch, pointTexture);
+            this._paddleRight.Draw(_spriteBatch, pointTexture);
             this._ball.sprite.Draw(_spriteBatch);
 
             _spriteBatch.End();

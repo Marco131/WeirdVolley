@@ -15,16 +15,19 @@ namespace WeirdVolley
         private Input _input;
         private int moveSpeed = 7;
         private float rotateSpeed = 0.08f;
+        public bool isLeft;
 
         private List<Vector2> vertices = new List<Vector2>();
 
 
         // Ctor
-        public Paddle(Sprite sprite, Input controls)
+        public Paddle(Sprite sprite, Input controls, bool isLeft)
         {
             this.sprite = sprite;
             this._input = controls;
+            this.isLeft = isLeft;
         }
+
 
         // Methods
         /// <summary>
@@ -55,7 +58,7 @@ namespace WeirdVolley
                 spriteBatch.Draw(circle, vertice, null, Color.Red, 0f, new Vector2(circle.Width/2, circle.Height/2), 1f,SpriteEffects.None, 0f);
             }
 
-            spriteBatch.Draw(circle, sprite.rectangle.Location.ToVector2(), null, Color.Red, 0f, new Vector2(circle.Width/2, circle.Height/2), 1f,SpriteEffects.None, 0f);*/
+            spriteBatch.Draw(circle, sprite.rectangle.Location.ToVector2(), null, Color.Red, 0f, new Vector2(circle.Width / 2, circle.Height / 2), 1f, SpriteEffects.None, 0f);*/
         }
 
 
@@ -130,6 +133,8 @@ namespace WeirdVolley
         /// <summary>
         /// Collide with world objetcs (window borders, net)
         /// </summary>
+        /// <param name="net"></param>
+        /// <param name="windowWidth"></param>
         private void worldCollisions(Sprite net, int windowWidth)
         {
             // find the closest vertices to the rigth and to the left
@@ -156,6 +161,19 @@ namespace WeirdVolley
             {
                 float offset = closestToTheRigth.X - windowWidth;
                 sprite.rectangle.X -= (int)offset;
+            }
+
+            // net
+            if (this.isLeft && closestToTheRigth.X > net.rectangle.Left) // left
+            {
+                float offset = closestToTheRigth.X - net.rectangle.Left;
+                sprite.rectangle.X -= (int)offset;
+            }
+            
+            if(!this.isLeft && closestToTheLeft.X < net.rectangle.Right) // right
+            {
+                float offset = net.rectangle.Right -  closestToTheLeft.X;
+                sprite.rectangle.X += (int)offset;
             }
 
             updateVertices();
