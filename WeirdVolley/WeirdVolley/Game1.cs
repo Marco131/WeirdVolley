@@ -8,7 +8,7 @@ namespace WeirdVolley
 {
     public class Game1 : Game
     {
-        private GraphicsDeviceManager _graphics;
+        private static GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
         public Texture2D pointTexture;
@@ -19,11 +19,11 @@ namespace WeirdVolley
         private Paddle _paddleRight;
         private Ball _ball;
 
-        public int windowWidth
+        public static int windowWidth
         {
             get { return _graphics.PreferredBackBufferWidth;}
         }
-        private int windowHeight
+        public static int windowHeight
         {
             get { return _graphics.PreferredBackBufferHeight; }
         }
@@ -98,7 +98,7 @@ namespace WeirdVolley
                 new Sprite(
                     defaultTexture,
                     new Rectangle(
-                        windowWidth / 2 - 50,
+                        windowWidth / 3 - 50,
                         25,
                         20,
                         20
