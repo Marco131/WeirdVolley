@@ -12,19 +12,28 @@ namespace WeirdVolley
     {
         // -- ATTRIBUTS --
         public Sprite sprite;
+        private Random rnd = new Random();
 
         // Moving
         private float yForce = 0.0125f;
-        private float xForce = 0.0125f;
+        private float xForce = 9f;
         public Vector2 acc;
         public Vector2 vel;
+
 
 
         // -- CTOR --
         public Ball(Sprite sprite)
         {
             this.sprite = sprite;
+
+            // random side initial acceleration
+            this.acc = new Vector2(
+                rnd.Next(0,2) > 0? this.xForce : -this.xForce,
+                0
+                );
         }
+
 
 
         // -- METHODS --
@@ -32,11 +41,10 @@ namespace WeirdVolley
         /// Updates the ball
         /// </summary>
         /// <param name="gametime"></param>
-        public void Update(GameTime gametime)
+        public void Update(GameTime gametime, Sprite net)
         {
             // apply forces
-            this.applyForce(new Vector2(0, this.yForce * (float)gametime.ElapsedGameTime.TotalMilliseconds)); // gravity
-            this.applyForce(new Vector2(this.xForce * (float)gametime.ElapsedGameTime.TotalMilliseconds, 0)); // side force
+            this.applyForce(new Vector2(0, this.yForce * (float)gametime.ElapsedGameTime.TotalMilliseconds)); // gravity          
 
             this.vel += this.acc;
             this.sprite.rectangle.X += (int)this.vel.X;
@@ -44,7 +52,7 @@ namespace WeirdVolley
 
             this.acc = Vector2.Zero;
 
-            this.Outside();
+            this.Collision(net);
         }
 
         /// <summary>
@@ -57,10 +65,11 @@ namespace WeirdVolley
         }
 
         /// <summary>
-        /// outside the screen collisions
+        /// wall and net collisions
         /// </summary>
-        public void Outside()
+        public void Collision(Sprite net)
         {
+            // Wall
             // down
             if (this.sprite.rectangle.Bottom > Game1.windowHeight)
             {
@@ -69,19 +78,38 @@ namespace WeirdVolley
             }
 
             // left
-            if (this.sprite.rectangle.Right < 0)
+            if (this.sprite.rectangle.Left < 0)
             {
-                // executes twice when toching wall !!!
                 this.sprite.rectangle.X = this.sprite.rectangle.Width / 2;
-                this.xForce *= -1;
+                this.vel.X *= -1;
             }
 
             // right
-            if (this.sprite.rectangle.Left > Game1.windowWidth)
+            if (this.sprite.rectangle.Center.X > Game1.windowWidth)
             {
-                // executes twice when toching wall !!!
                 this.sprite.rectangle.X = Game1.windowWidth - this.sprite.rectangle.Width/2;
-                this.xForce *= -1;
+                this.vel.X *= -1;
+            }
+
+            // Net
+            // left
+            if (this.sprite.rectangle.Right > net.rectangle.X &&
+                this.sprite.rectangle.Right < net.rectangle.X + 5 &&
+                this.sprite.rectangle.Y + this.sprite.rectangle.Height / 2 > Game1.windowHeight / 2 &&
+                this.vel.X > 0)
+            {
+                this.sprite.rectangle.X = net.rectangle.X - this.sprite.rectangle.Width / 2;
+                this.vel.X *= -1;
+            }
+
+            // right
+            if(this.sprite.rectangle.Left < net.rectangle.X + 10 &&
+                this.sprite.rectangle.Left > net.rectangle.X - 5 &&
+                this.sprite.rectangle.Y + this.sprite.rectangle.Height / 2 > Game1.windowHeight / 2 &&
+                this.vel.X < 0)
+            {
+                this.sprite.rectangle.X = net.rectangle.X + this.sprite.rectangle.Width / 2;
+                this.vel.X *= -1;
             }
         }
     }

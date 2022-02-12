@@ -98,7 +98,7 @@ namespace WeirdVolley
                 new Sprite(
                     defaultTexture,
                     new Rectangle(
-                        windowWidth / 3 - 50,
+                        windowWidth / 2 - 10,
                         25,
                         20,
                         20
@@ -117,7 +117,7 @@ namespace WeirdVolley
             this._paddleLeft.Update(gameTime, _net, windowWidth);
             this._paddleRight.Update(gameTime, _net, windowWidth);
 
-            this._ball.Update(gameTime);
+            this._ball.Update(gameTime, this._net);
 
             base.Update(gameTime);
         }
